@@ -25,9 +25,38 @@ To change the spoken audio:
 2. Edit the text to anything you'd like Amazon Polly to convert to speech
 3. Commit the changes and push to GitHub
 
+Workflow Automation (CI/CD with GitHub Actions)
 
+This project uses GitHub Actions to automatically convert text content (speech.txt) into audio using Amazon Polly, and upload the generated .mp3 files to an S3 bucket in different environments (beta and prod).
 
-Workflow Automation
+PR Preview (Beta Environment)
+
+Workflow File: .github/workflows/on_pull_request.yml
+
+Trigger: When a pull request targets the main branch.
+
+Action:
+
+- Synthesizes speech from speech.txt
+
+- Uploads the audio as speech-beta.mp3 to: s3://my-polly-pixel/polly-audio/speech-beta.mp3
+
+This allows reviewers to preview the content before it's merged to production.
+
+Production Deployment (Prod Environment)
+
+Workflow File: .github/workflows/on_merge.yml
+
+Trigger: On push to the main branch (e.g., after merging a PR)
+
+Action:
+
+- Synthesizes speech from speech.txt
+
+- Uploads the audio as speech-prod.mp3 to: s3://my-polly-pixel/polly-audio/speech-prod.mp3
+
+This ensures the latest approved content is automatically pushed to production without any manual step.
+
 
 Preview Audio (Beta)
 - File: '.github/workflows/on_pull_request.yml'
