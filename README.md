@@ -90,6 +90,7 @@ Why GitHub Actions?
 - Runs entirely in the GitHub developer workflow
 - Secure, isolated environments with secrets handling
 
+### Testing pull request trigger
 
 Created for:
 Pixel Learning Co., a digital-first education startup focused on accessibility and automation.
