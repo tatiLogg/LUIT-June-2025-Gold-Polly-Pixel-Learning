@@ -1,35 +1,64 @@
 import boto3
+
 import os
+ 
+# === Project Configuration ===
 
-# Initialize Polly client
-polly = boto3.client('polly')
+bucket_name = "my-polly-pixel"
 
-# Read text from file
-with open('speech.txt', 'r') as file:
-    text = file.read()
+region = "us-east-1"  # Update if your bucket is in a different region
 
-# Synthesize speech
+output_filename = "speech-prod.mp3"
+
+s3_key = f"polly-audio/{output_filename}"
+
+input_file = "speech.txt"
+ 
+# === Read text from local file ===
+
+with open(input_file, "r") as file:
+
+     text = file.read()
+ 
+# === Initialize Polly and S3 clients ===
+
+polly = boto3.client("polly", region_name=region)
+
+s3 = boto3.client("s3", region_name=region)
+ 
+# === Use Polly to synthesize speech ===
+
 response = polly.synthesize_speech(
-    Text=text,
-    OutputFormat='mp3',
-    VoiceId='Joanna'  # You can change this to another voice like 'Matthew'
-)
 
-# Get the output file name from environment variable, fallback to speech.mp3
-output_filename = os.getenv('OUTPUT_FILE', 'speech.mp3')
+     Text=text,
 
-# Save the audio stream to a file
-with open(output_filename, 'wb') as out_file:
-    out_file.write(response['AudioStream'].read())
+     OutputFormat="mp3",
 
-print(f"✅ Speech synthesized and saved as '{output_filename}'")
+     VoiceId="Joanna"  # You can change to Matthew, Amy, etc.
 
-# Optional: Upload to S3 if environment variables are present
-bucket = os.getenv('S3_BUCKET')
-if bucket:
-    s3 = boto3.client('s3')
-    s3.upload_file(output_filename, bucket, output_filename)
-    print(f"✅ Uploaded to s3://{bucket}/{output_filename}")
+ )
+ 
+# === Save audio locally ===
+
+local_path = f"/tmp/{output_filename}"
+
+with open(local_path, "wb") as file:
+
+     file.write(response["AudioStream"].read())
+ 
+print(f"✅ Audio saved to {local_path}")
+ 
+# === Upload to S3 ===
+
+try:
+
+     s3.upload_file(local_path, bucket_name, s3_key)
+
+     print(f"✅ Uploaded to s3://{bucket_name}/{s3_key}")
+
+except Exception as e:
+
+     print(f"❌ Failed to upload: {e}")
 
 
 
