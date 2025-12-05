@@ -46,7 +46,7 @@ with open(local_path, "wb") as file:
 
      file.write(response["AudioStream"].read())
  
-print(f"✅ Audio saved to {local_path}")
+print(f" Audio saved to {local_path}")
  
 # === Upload to S3 ===
 
@@ -54,7 +54,7 @@ try:
 
      s3.upload_file(local_path, bucket_name, s3_key)
 
-     print(f"✅ Uploaded to s3://{bucket_name}/{s3_key}")
+     print(f" Uploaded to s3://{bucket_name}/{s3_key}")
 
 except Exception as e:
 
